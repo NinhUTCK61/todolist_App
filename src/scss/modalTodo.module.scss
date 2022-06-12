@@ -1,0 +1,34 @@
+@use "./header.module.scss" as header; 
+.container{
+    margin-top: calc(header.$height_header + 16px);
+}
+.formContainer{
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 1px 1px 10px #ccc;
+    padding: 0 16px;
+    text-align: center;
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.formHeading{
+    margin: 20px 0 22px;
+    color: #000;
+}
+
+.formInput{
+    padding-top: 16px;
+}
+
+.formPriority{
+    width: 100%;
+    text-align: start;
+}
+
+.btnAdd{
+    padding: 28px 0 16px;
+    text-align: end;
+}
