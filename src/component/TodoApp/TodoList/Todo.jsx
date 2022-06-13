@@ -14,9 +14,9 @@ const priorityMapColor = {
 }
 export default function Todo(children) {
    
-    const [titleValue, setTitle] = useState();
-    const [contentValue, setContent] = useState();
-    const [valueSection, setValueSection] = useState('Hight');
+    const [titleValue, setTitle] = useState(`${children.title}`);
+    const [contentValue, setContent] = useState(`${children.content}`);
+    const [valueSection, setValueSection] = useState(`${children.priority}`);
     const [visible, setvisible] = useState(true);
 
     const handlePriorityChange =(e)=>{
