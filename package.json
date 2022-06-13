@@ -10,6 +10,7 @@
     "antd": "^4.20.6",
     "clsx": "^1.1.1",
     "firebase": "^9.8.2",
+    "heroku": "^7.60.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-redux": "^8.0.1",
@@ -24,9 +25,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index",
+    "start": "node index",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
