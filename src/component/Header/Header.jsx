@@ -33,7 +33,9 @@ export default function Header() {
                         
                     >
                         
-                        <Avatar style = {{cursor: "pointer"}} src={user.photoURL}/>
+                        <Avatar style = {{cursor: "pointer"}} src={user.photoURL}>
+                            {user.photoURL ? (user.photoURL):(user.email.charAt(0).toUpperCase())}
+                        </Avatar>
                     </Dropdown>
                 </div>
             </Col>
