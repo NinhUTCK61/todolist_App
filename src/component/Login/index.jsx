@@ -17,37 +17,6 @@ export default function Login() {
     const {user} = useContext(AuthContext)
 
     const navigate = useNavigate();
-    const providerFb = new FacebookAuthProvider()
-    const providerGg = new GoogleAuthProvider()
-    const handleSubmitFb = async()=>{
-        const {user, _tokenResponse} = await signInWithPopup(auth, providerFb)
-        
-        if(_tokenResponse?.isNewUser)
-        {   
-            await addDoc(collection(db, "users"),{
-                uid: user.uid,
-                email: user.email,
-                displayName: user.displayName,
-                photoURL: user.photoURL,
-            }) 
-        }
-    }
-    
-    
-
-    const handleSubmitGg = async()=>{
-        const {user, _tokenResponse} = await signInWithPopup(auth, providerGg)
-        
-        if(_tokenResponse?.isNewUser)
-        {   
-            await addDoc(collection(db, "users"),{
-                uid: user.uid,
-                email: user.email,
-                displayName: user.displayName,
-                photoURL: user.photoURL,
-            }) 
-        }
-    }
 
     const onFinish = (values) => {
         
@@ -135,10 +104,6 @@ export default function Login() {
                             </div>
                         </Form.Item>
                         </Form>
-                        <div className={styles.btnLoginProvider}>
-                            <Button style={{width: '100%', marginBottom: 16}} onClick={handleSubmitFb}>Login with Facebook</Button>
-                            <Button style={{width: '100%', marginBottom: 16}} onClick={handleSubmitGg}>Login with Google</Button>
-                        </div>
                     </div>
                 </Col>
             </Row>
