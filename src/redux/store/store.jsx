@@ -3,5 +3,8 @@ import { configureStore } from '@reduxjs/toolkit'
 export const store = configureStore({
     reducer:{
         todoList: todoListSlice.reducer
-    }
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+        serializableCheck: false
+    }),
 })

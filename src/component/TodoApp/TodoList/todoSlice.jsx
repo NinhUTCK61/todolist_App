@@ -1,7 +1,8 @@
-import { async } from "@firebase/util";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { arrayRemove, arrayUnion, doc, getDoc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, updateDoc} from 'firebase/firestore';
 import { db } from "../../../firebase/firebaseConfig";
+import { getQueryData } from "../../../getDataFirestore/getDataFirestore";
+
 export default createSlice({
     name: 'todoList',
     initialState: {
@@ -10,8 +11,7 @@ export default createSlice({
     },
     reducers: {
         addTodo: (state, action)=>{
-            state.push(action.payload);
-            state.sort((a, b)=>(b.rank - a.rank))
+            state.todos = [...action.payload]
         },
 
         updateTodo: (state, action)=>{
@@ -42,69 +42,97 @@ export default createSlice({
         .addCase(fetchData.fulfilled, (state, action)=>{
             state.status = 'idle'
             state.todos = action.payload
-            state.todos.sort((a, b)=>(b.rank - a.rank))
+           
         })
         .addCase(addNewTodo.fulfilled, (state, action)=>{
             state.status = 'idle'
-            state.todos = action.payload
-            state.todos.sort((a, b)=>(b.rank - a.rank))
+            state.todos = [...action.payload]
+            
         })
-        .addCase(updateNewTodo.fulfilled, (state, action)=>{
+        .addCase(updateTodo.fulfilled, (state, action)=>{
             state.status = 'idle'
             state.todos = action.payload
-            state.todos.sort((a, b)=>(b.rank - a.rank))
+            
         })
-        .addCase(deleteNewtodo.fulfilled, (state, action)=>{
+        .addCase(deleteTodo.fulfilled, (state, action)=>{
             state.status = 'idle'
             state.todos = action.payload
-            state.todos.sort((a, b)=>(b.rank - a.rank))
+            
+        })
+        .addCase(completedTodo.fulfilled,(state, action)=>{
+            state.status = 'idle'
+            state.todos = action.payload
         })
     }
 });
 
 export const fetchData = createAsyncThunk("todo/fetchData", async(user)=>{
-    const dbRef = doc(db,`users/${user.email}`);
-    const dataRequire = await getDoc(dbRef)
-    return dataRequire.data().todoList
+    const condition = {
+        fielName: "uid",
+        operator: "==",
+        compareValue: user.uid
+    }
+    const resultData = getQueryData("todoList", condition);
+    return resultData
 })
 
 export const addNewTodo = createAsyncThunk('todo/addNewTodos', async(todo)=>{
-    const dbRef = doc(db,`users/${todo.email}`);
-    const data = await getDoc(dbRef)
-    
-    if(data.exists())
-    {
-        await updateDoc(doc(db, "users", todo.email),{
-            todoList: arrayUnion(todo)
-        })
-    }else
-    {
-        await setDoc(doc(db, "users", todo.email),{
-            todoList: arrayUnion(todo)
-        })
+    await addDoc(collection(db, "todoList"), {
+        uid: todo.uid,
+        title: todo.title,
+        content: todo.content, 
+        priority: todo.priority,
+        rank: todo.rank,
+        completed: false,
+        createdAt : todo.createdAt
+    })
+    const condition = {
+        fielName: "uid",
+        operator: "==",
+        compareValue: todo.uid
     }
-    const dataRequire = await getDoc(dbRef)
-    return dataRequire.data().todoList
+    const resultData = getQueryData("todoList", condition);
+    return resultData
 })
 
-export const updateNewTodo = createAsyncThunk('todo/updateNewTodos', async(todoObj)=>{
-    const dbRef = doc(db,`users/${todoObj.todo.email}`);
+export const updateTodo = createAsyncThunk('todo/updateTodos', async(todo)=>{
+    const dbRef = doc(db,`todoList/${todo.id}`);
     await updateDoc(dbRef,{
-        todoList: arrayRemove(todoObj.objTodoPrev),
+        title: todo.title,
+        content: todo.content, 
+        priority: todo.priority,
+        rank: todo.rank,
     })
-    
-    await updateDoc(dbRef,{
-        todoList: arrayUnion(todoObj.todo)
-    })
-    
-    const dataRequire = await getDoc(doc(db,`users/${todoObj.todo.email}`))
-    return dataRequire.data().todoList
+    const condition = {
+        fielName: "uid",
+        operator: "==",
+        compareValue: todo.uid
+    }
+    const resultData = getQueryData("todoList", condition);
+    return resultData
 })
 
-export const deleteNewtodo = createAsyncThunk("todo/deleteNewTodo", async(todo)=>{
-    await updateDoc(doc(db, "users", todo.email),{
-        todoList: arrayRemove(todo)
+export const deleteTodo = createAsyncThunk("todo/deleteTodo", async(todo)=>{
+    await deleteDoc(doc(db,`todoList/${todo.id}`))
+    const condition = {
+        fielName: "uid",
+        operator: "==",
+        compareValue: todo.uid
+    }
+    const resultData = getQueryData("todoList", condition);
+    return resultData
+})
+
+export const completedTodo = createAsyncThunk("todo/completedTodo", async(todo)=>{
+    await updateDoc(doc(db,`todoList/${todo.id}`),{
+        completed: todo.completed,
     })
-    const dataRequire = await getDoc(doc(db,`users/${todo.email}`))
-    return dataRequire.data().todoList
+
+    const condition = {
+        fielName: "uid",
+        operator: "==",
+        compareValue: todo.uid
+    }
+    const resultData = getQueryData("todoList", condition);
+    return resultData
 })

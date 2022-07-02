@@ -3,13 +3,14 @@
     border-radius: 5px;
     background-color: #fff;
     box-shadow: 1px 1px 10px #ccc;
-    padding: 8px 8px;
 }
 
 .settingTodo{
     text-align: end;
-    padding-bottom: 4px;
-    border-bottom: 0.3px solid #ccc;
+    padding: 8px 0;
+    margin: 0 8px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .iconSettingEdit{
@@ -21,6 +22,13 @@
 .iconSettingDelete{
     font-size: 16px;
     padding: 3px 3px 3px;
+    margin-right: 7px;
+}
+
+.tagContent{
+    padding: 8px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
 }
 
 .tagInput{
@@ -32,3 +40,4 @@
     margin-top: 8px;
     text-align: start;
 }
+

@@ -1,17 +1,19 @@
 import { Button, Row, Col, Form, Input, notification } from 'antd'
 import { createUserWithEmailAndPassword} from 'firebase/auth'
 import React from 'react'
-import { auth} from '../../firebase/firebaseConfig'
+import { auth, db} from '../../firebase/firebaseConfig'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import styles from "../../scss/login.module.scss"
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { useContext } from 'react';
+import AuthProvider from '../AuthProvider/AuthProvider';
+import { addDoc, collection } from 'firebase/firestore';
 
 export default function SignUp() {
     
     const [valueEmail, setvalueEmail] = useState('');
     const [valuePassword, setvaluePassword] = useState('')
-
     const onFinish = (values) => {
         
     };
@@ -22,19 +24,25 @@ export default function SignUp() {
         navigate("/login")
     } 
     
-    const handleRegisterAccount = ()=>{
-        createUserWithEmailAndPassword(auth, valueEmail, valuePassword)
-        .then((userCredential) => {
-            // Signed in 
-            const user = userCredential.user;
-            console.log(user)
-            notification["success"]({
-                message: "Successful registration",
-                duration: 1.5,
-                top: "50px"
-            })
-        })
-        .catch((error) => {
+    const handleRegisterAccount = async()=>{
+        try {
+            if(valueEmail.trim() !== "")
+            {
+                const {user} = await createUserWithEmailAndPassword(auth, valueEmail, valuePassword)
+                notification["success"]({
+                    message: "Successful registration",
+                    duration: 1.5,
+                    top: "50px"
+                })
+                
+                await addDoc(collection(db, "users"), {
+                    displayName: user.email,
+                    email: user.email,
+                    uid: user.uid,
+                })
+            }
+        } catch (error) {
+            console.log(error.code)
             const textNotify = (error.code).replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi , ' ').replace("auth", '').trim()
             
             notification['error']({
@@ -42,7 +50,7 @@ export default function SignUp() {
                 duration: 1.5,
                 top: "50px"
             })
-        });
+        }
     }
   return (
         <div className={styles.loginBackGd}>

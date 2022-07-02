@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { Tag, Select, Input, Button, Typography} from 'antd'
-import { EditTwoTone, DeleteTwoTone} from '@ant-design/icons';
-import { deleteNewtodo, updateNewTodo } from './todoSlice.jsx'
+import { Tag, Select, Input, Button, Typography, Checkbox, Divider} from 'antd'
+import { EditTwoTone, DeleteTwoTone, CheckCircleTwoTone} from '@ant-design/icons';
+import { completedTodo, deleteTodo, updateTodo } from './todoSlice.jsx'
 import { useDispatch } from 'react-redux';
 import  handleCheckPriority  from './checkPriority.js';
 import styles from '../../../scss/tagTodo.module.scss'
@@ -18,6 +18,7 @@ export default function Todo(children) {
     const [contentValue, setContent] = useState(`${children.content}`);
     const [valueSection, setValueSection] = useState(`${children.priority}`);
     const [visible, setvisible] = useState(true);
+    const [isCompletedTodo, setIsCompletedTodo] = useState(false)
 
     const handlePriorityChange =(e)=>{
         setValueSection(e)
@@ -40,24 +41,16 @@ export default function Todo(children) {
     const handleUpdateTodo = ()=>{
         if((titleValue === '' || contentValue === '')) return
         else{
-            const objTodoPrev = {
-                id: children.id, 
-                title: children.title,
-                content: children.content, 
-                priority: children.priority,
-                rank: children.rank,
-                email: children.email
-            };
             const todo = {
                 id: children.id, 
-                    title: titleValue,
-                    content: contentValue, 
-                    priority: valueSection,
-                    rank: handleCheckPriority(valueSection),
-                    email: children.email
+                uid: children.uid,
+                title: titleValue.trim(),
+                content: contentValue.trim(), 
+                priority: valueSection,
+                rank: handleCheckPriority(valueSection),
             }
             dispatch(
-                updateNewTodo({objTodoPrev,todo})
+                updateTodo({...todo})
             )
             setValueSection('Hight')
             setvisible(true)
@@ -66,8 +59,9 @@ export default function Todo(children) {
 
     const handleDeleteTodo = ()=>{
         dispatch(
-            deleteNewtodo({
-                id: children.id, 
+            deleteTodo({
+                id: children.id,
+                uid: children.uid, 
                 title: children.title,
                 content: children.content, 
                 priority: children.priority,
@@ -75,17 +69,33 @@ export default function Todo(children) {
                 email: children.email
             })
         )
-    }
-
+    } 
+     
+    const onChange = (e) => {
+        dispatch(
+            completedTodo({
+                id: children.id,
+                uid: children.uid, 
+                completed: e.target.checked
+            })
+        )
+    };
   return (
-      <div className={styles.todoBox}>
+    <div className={styles.todoBox}>
         <div className={styles.settingTodo}>
-            <EditTwoTone twoToneColor="orange" onClick={handleEditTodo} className={styles.iconSettingEdit}/>
-            <DeleteTwoTone twoToneColor="red" onClick={handleDeleteTodo} className={styles.iconSettingDelete}/>
+            <div>
+                {
+                    children.completed?(<Typography.Text type='success'>Completed!</Typography.Text>):(null)
+                }
+            </div>
+            <div>
+                <EditTwoTone twoToneColor="orange" onClick={handleEditTodo} className={styles.iconSettingEdit}/>
+                <DeleteTwoTone twoToneColor="red" onClick={handleDeleteTodo} className={styles.iconSettingDelete}/>
+                <Checkbox checked={children.completed} onChange={onChange}></Checkbox>
+            </div>
         </div>
-        <div className={styles.tagContent}>
-
-        </div>
+        <Divider style={{margin: "0px"}}/>
+        <div className={styles.tagContent} style={{background:children.completed?("#95e207"):("#fff")}}>
             <div className={styles.tagInput}>
                 {
                     (visible) ? (
@@ -125,39 +135,40 @@ export default function Todo(children) {
                     
                 )}
             </div>
-        {   
-            (visible)
-            ?
-            (<Tag color={priorityMapColor[children.priority]}>{children.priority}</Tag>)
-            :
-            (<Select 
-                    className={styles.tagPriority}
-                    value={valueSection}
-                    onChange={(e)=>handlePriorityChange(e)}
-                    placeholder="Choose priority"
-                    disabled={visible}
-                >
-                    <Option value={'Hight'} label='Hight'>
-                        <Tag color={'red'}>Hight</Tag>
-                    </Option>
-                    <Option value={'Medium'} label='Medium'>
-                        <Tag color={'purple'}>Medium</Tag>
-                    </Option>
-                    <Option value={'Low'} label='Low'>
-                        <Tag color={'cyan'}>Low</Tag>
-                    </Option>
-            </Select>)
-        }
-        {
-            !visible &&(
-                <div style={{paddingTop: '8px', textAlign: "end"}}>
-                    <span style={{paddingRight:'4px'}}>
-                        <Button onClick={()=>setvisible(true)} >Cancel</Button>
-                    </span>
-                    <Button onClick={handleUpdateTodo}>Update</Button>
-                </div>
-            )
-        }
+            {   
+                (visible)
+                ?
+                (<Tag color={priorityMapColor[children.priority]}>{children.priority}</Tag>)
+                :
+                (<Select 
+                        className={styles.tagPriority}
+                        value={valueSection}
+                        onChange={(e)=>handlePriorityChange(e)}
+                        placeholder="Choose priority"
+                        disabled={visible}
+                    >
+                        <Option value={'Hight'} label='Hight'>
+                            <Tag color={'red'}>Hight</Tag>
+                        </Option>
+                        <Option value={'Medium'} label='Medium'>
+                            <Tag color={'purple'}>Medium</Tag>
+                        </Option>
+                        <Option value={'Low'} label='Low'>
+                            <Tag color={'cyan'}>Low</Tag>
+                        </Option>
+                </Select>)
+            }
+            {
+                !visible &&(
+                    <div style={{paddingTop: '8px', textAlign: "end"}}>
+                        <span style={{paddingRight:'4px'}}>
+                            <Button onClick={()=>setvisible(true)} >Cancel</Button>
+                        </span>
+                        <Button onClick={handleUpdateTodo}>Update</Button>
+                    </div>
+                )
+            }
+        </div>
     </div>
   )
 }

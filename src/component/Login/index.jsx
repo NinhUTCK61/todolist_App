@@ -1,17 +1,20 @@
 import { Button, Row, Col, Form, Input, notification } from 'antd'
 import { FacebookAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup,} from 'firebase/auth'
-import {arrayUnion, doc, setDoc } from 'firebase/firestore'
+import {addDoc, arrayUnion, collection, doc, setDoc } from 'firebase/firestore'
 import React, { useState } from 'react'
 import { auth, db } from '../../firebase/firebaseConfig'
 import { v4 as uuid } from 'uuid'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import styles from "../../scss/login.module.scss"
 import { Outlet, useNavigate } from 'react-router-dom'
+import { useContext } from 'react'
+import { AuthContext } from '../AuthProvider/AuthProvider'
 
 export default function Login() {
  
     const [valueEmail, setValueEmail] = useState('');
     const [valuePass, setValuePass] = useState('')
+    const {user} = useContext(AuthContext)
 
     const navigate = useNavigate();
     const providerFb = new FacebookAuthProvider()
@@ -21,14 +24,12 @@ export default function Login() {
         
         if(_tokenResponse?.isNewUser)
         {   
-            await setDoc(doc(db, "users", user.email),{
-                todoList: arrayUnion({
-                    id: uuid,
-                    title: "Welcome to todo app",
-                    content: "Start to plan",
-                    priority: "Hight",
-                })
-            })
+            await addDoc(collection(db, "users"),{
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+                photoURL: user.photoURL,
+            }) 
         }
     }
     
@@ -39,14 +40,12 @@ export default function Login() {
         
         if(_tokenResponse?.isNewUser)
         {   
-            await setDoc(doc(db, "users", user.email),{
-                todoList: arrayUnion({
-                    id: uuid,
-                    title: "Welcome to todo app",
-                    content: "Start to plan",
-                    priority: "Hight",
-                })
-            })
+            await addDoc(collection(db, "users"),{
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+                photoURL: user.photoURL,
+            }) 
         }
     }
 

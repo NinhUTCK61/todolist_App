@@ -15,7 +15,7 @@ export default function App() {
   const dispatch = useDispatch()
   useEffect(()=>{
     dispatch(fetchData(user))
-  },[user.email])
+  },[user.uid])
   return (
     <>
                       

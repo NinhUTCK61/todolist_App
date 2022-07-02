@@ -1,14 +1,14 @@
 import React, { useContext, useState } from 'react'
-import { Input, Select, Tag, Button, Typography, Row, Col, Layout} from 'antd'
+import { Input, Select, Tag, Button, Typography, Row, Col} from 'antd'
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { addNewTodo } from './TodoList/todoSlice.jsx'
 import Todo from './TodoList/Todo.jsx';
-import {v4 as uuid} from'uuid'
 import  handleCheckPriority  from './TodoList/checkPriority.js';
 import styles from "../../scss/modalTodo.module.scss"
 import clsx from 'clsx';
 import {AuthContext} from "../AuthProvider/AuthProvider.jsx"
+import { serverTimestamp} from 'firebase/firestore';
 
 const {Option} = Select;
 export default function TodoList() {
@@ -26,12 +26,12 @@ export default function TodoList() {
         }else
         {   
             const data = {
-                id: uuid(),
-                title: titleValue,
-                content: contentValue, 
+                uid: user.uid,
+                title: titleValue.trim(),
+                content: contentValue.trim(), 
                 priority: valueSection,
                 rank: handleCheckPriority(valueSection),
-                email: user.email
+                createdAt: serverTimestamp()
             }
             dispatch(
                 addNewTodo({...data})
@@ -65,17 +65,18 @@ export default function TodoList() {
                     <div>
                         <Row gutter={[16, 16]}>
                             {
-                                (todoList.todos).map((todo, index)=>(
+                                (todoList.todos)?.map((todo, index)=>(
                                     
                                     <Col span={8} key={index}>
                                             <Todo
                                                 key={index}
-                                                id = {todo.id}
+                                                id={todo.id}
+                                                uid = {todo.uid}
                                                 title = {todo.title} 
                                                 content = {todo.content}
                                                 priority = {todo.priority}
                                                 rank = {todo.rank}
-                                                email = {user.email}
+                                                completed = {todo.completed}
                                             />
                                     </Col>
                                 ))
@@ -129,7 +130,7 @@ export default function TodoList() {
                             </Select>
                         </div>
                         <div className={styles.btnAdd}>
-                            <Button onClick={handleAddTodo}>Add</Button>
+                            <Button onClick={()=>handleAddTodo()}>Add</Button>
                         </div>
                     </div>
                 </Col>
