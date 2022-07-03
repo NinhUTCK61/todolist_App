@@ -4,12 +4,12 @@ import TodoList from './component/TodoApp/index.jsx';
 import BackGroundTodo from './component/backgroundAnimation/BackGroundTodo.js'
 import { Col, Row } from 'antd';
 import { Route, Routes } from 'react-router-dom';
-import Login from './component/Login';
 import { useDispatch } from 'react-redux';
 import { AuthContext } from './component/AuthProvider/AuthProvider';
 import { fetchData } from './component/TodoApp/TodoList/todoSlice';
 import Header from './component/Header/Header';
 import SignUp from './component/Login/SignUp';
+import SignIn from './component/Login/SignIn';
 export default function App() {
   const {user} = useContext(AuthContext)
   const dispatch = useDispatch()
@@ -20,7 +20,7 @@ export default function App() {
     <>
                       
       <Routes>
-        <Route path='/login'  element={<Login/>}/>
+        <Route path='/login'  element={<SignIn/>}/>
         <Route path='/signup' element={<SignUp/>}/>
         <Route path="/" element={
           <>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Tag, Select, Input, Button, Typography, Checkbox, Divider} from 'antd'
-import { EditTwoTone, DeleteTwoTone, CheckCircleTwoTone} from '@ant-design/icons';
+import { EditTwoTone, DeleteTwoTone} from '@ant-design/icons';
 import { completedTodo, deleteTodo, updateTodo } from './todoSlice.jsx'
 import { useDispatch } from 'react-redux';
 import  handleCheckPriority  from './checkPriority.js';
@@ -18,7 +18,6 @@ export default function Todo(children) {
     const [contentValue, setContent] = useState(`${children.content}`);
     const [valueSection, setValueSection] = useState(`${children.priority}`);
     const [visible, setvisible] = useState(true);
-    const [isCompletedTodo, setIsCompletedTodo] = useState(false)
 
     const handlePriorityChange =(e)=>{
         setValueSection(e)
@@ -80,6 +79,19 @@ export default function Todo(children) {
             })
         )
     };
+
+    console.log(children.content.includes("\n"), children.content)
+    const handleTextContent = (text)=>{
+        if(text.trim().includes("\n")){
+            return(text.split("\n").map((element, index) => {
+                return(
+                    <span key={index}>{element}<br/></span>
+                )
+            }));
+        }else{
+            return (<span>{text}</span>)
+        }
+    }
   return (
     <div className={styles.todoBox}>
         <div className={styles.settingTodo}>
@@ -120,7 +132,7 @@ export default function Todo(children) {
             </div>
             <div className={styles.tagInput}>
                 {(visible)?(
-                    <pre style={{paddingLeft:'2px'}}>{`${children.content.trim()}`}</pre>
+                    <div style={{padding:"0 10px 10px"}}>{handleTextContent(children.content)}</div>
                 ):
                 (
                     <Input.TextArea
